@@ -1,0 +1,4 @@
+Bundle-Name: gradebook
+Bundle-SymbolicName: com.curious.grade
+Bundle-Version: 1.0.0
+Export-Package: com.curious.grade.constants

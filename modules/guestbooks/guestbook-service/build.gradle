@@ -1,0 +1,11 @@
+dependencies {
+	compile project(":modules:guestbooks:guestbook-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+}
+
+buildService {
+	apiDir = "../guestbook-api/src/main/java"
+}
+
+group = "com.curious.guestbook"

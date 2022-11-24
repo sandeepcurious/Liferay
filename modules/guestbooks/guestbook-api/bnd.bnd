@@ -1,0 +1,11 @@
+Bundle-Name: guestbooks-api
+Bundle-SymbolicName: com.curious.guestbook.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	com.curious.guestbook.exception,\
+	com.curious.guestbook.service,\
+	com.curious.guestbook.service.persistence,\
+	com.curious.guestbook.constants,\
+	com.curious.guestbook.model
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../guestbook-service/service.xml
