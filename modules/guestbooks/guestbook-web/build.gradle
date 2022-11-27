@@ -1,5 +1,7 @@
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	compileOnly group: "com.liferay", name: "com.liferay.asset.api"
+	compileOnly group: "com.liferay", name: "com.liferay.asset.display.page.api"
 	compileOnly project(":modules:guestbooks:guestbook-api")
 	compileOnly project(":modules:guestbooks:guestbook-service")
 	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.0.2"

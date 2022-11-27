@@ -19,12 +19,15 @@ import com.curious.guestbook.exception.EntryMessageException;
 import com.curious.guestbook.exception.EntryNameException;
 import com.curious.guestbook.model.Entry;
 import com.curious.guestbook.service.base.EntryLocalServiceBaseImpl;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -36,13 +39,11 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Sandeep
  */
-@Component(
-	property = "model.class.name=com.curious.guestbook.model.Entry",
-	service = AopService.class
-)
+@Component(property = "model.class.name=com.curious.guestbook.model.Entry", service = AopService.class)
 public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
+
 	public Entry addEntry(long userId, long guestbookId, String name, String email, String message,
-			ServiceContext serviceContext) throws PortalException , SystemException{
+			ServiceContext serviceContext) throws PortalException, SystemException {
 
 		long groupId = serviceContext.getScopeGroupId();
 
@@ -65,10 +66,20 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 
 		entry.setMessage(message);
 		entryPersistence.update(entry);
-		resourceLocalService.addResources(user.getCompanyId(), groupId, userId, Entry.class.getName(), entryId, false, true, true);
+		resourceLocalService.addResources(user.getCompanyId(), groupId, userId, Entry.class.getName(), entryId, false,
+				true, true);
+
+		AssetEntry assetEntry = assetEntryLocalService.updateEntry(userId, groupId, entry.getCreateDate(),
+				entry.getModifiedDate(), Entry.class.getName(), entryId, entry.getUuid(), 0,
+				serviceContext.getAssetCategoryIds(), serviceContext.getAssetTagNames(), true, true, null, null, null,
+				null, ContentTypes.TEXT_HTML, entry.getMessage(), null, null, null, null, 0, 0, null);
+
+		assetLinkLocalService.updateLinks(userId, assetEntry.getEntryId(), serviceContext.getAssetLinkEntryIds(),
+				AssetLinkConstants.TYPE_RELATED);
+
 		return entry;
 	}
-	
+
 	public Entry updateEntry(long userId, long guestbookId, long entryId, String name, String email, String message,
 			ServiceContext serviceContext) throws PortalException, SystemException {
 		Entry entry = entryLocalService.getEntry(entryId);
@@ -85,6 +96,16 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 		entry.setMessage(message);
 		entryPersistence.update(entry);
 		resourceLocalService.updateModelResources(entry, serviceContext);
+
+		AssetEntry assetEntry = assetEntryLocalService.updateEntry(userId, serviceContext.getScopeGroupId(),
+				entry.getCreateDate(), entry.getModifiedDate(), Entry.class.getName(), entryId, entry.getUuid(), 0,
+				serviceContext.getAssetCategoryIds(), serviceContext.getAssetTagNames(), true, true,
+				entry.getCreateDate(), null, null, null, ContentTypes.TEXT_HTML, entry.getMessage(), null, null, null,
+				null, 0, 0, serviceContext.getAssetPriority());
+
+		assetLinkLocalService.updateLinks(userId, assetEntry.getEntryId(), serviceContext.getAssetLinkEntryIds(),
+				AssetLinkConstants.TYPE_RELATED);
+
 		return entry;
 	}
 
@@ -92,17 +113,23 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 		Entry entry = getEntry(entryId);
 		entry = deleteEntry(entry);
 		resourceLocalService.deleteResource(entry, ResourceConstants.SCOPE_INDIVIDUAL);
+		AssetEntry assetEntry = assetEntryLocalService.getEntry(Entry.class.getName(), entryId);
+
+		assetLinkLocalService.deleteLinks(assetEntry.getEntryId());
+
+		assetEntryLocalService.deleteAssetEntry(assetEntry);
+
 		return entry;
 	}
-	
-	public List<Entry> getEntries(long groupId, long guestbookId){
+
+	public List<Entry> getEntries(long groupId, long guestbookId) {
 		return entryPersistence.findByG_G(groupId, guestbookId);
 	}
-	
-	public List<Entry> getEntries(long groupId, long guestbookId, int start, int end){
+
+	public List<Entry> getEntries(long groupId, long guestbookId, int start, int end) {
 		return entryPersistence.findByG_G(groupId, guestbookId, start, end);
 	}
-	
+
 	public List<Entry> getEntries(long groupId, long guestbookId, int start, int end, OrderByComparator<Entry> obc) {
 
 		return entryPersistence.findByG_G(groupId, guestbookId, start, end, obc);

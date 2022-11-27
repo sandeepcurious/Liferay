@@ -18,11 +18,14 @@ import com.curious.guestbook.exception.GuestbookNameException;
 import com.curious.guestbook.model.Entry;
 import com.curious.guestbook.model.Guestbook;
 import com.curious.guestbook.service.base.GuestbookLocalServiceBaseImpl;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -35,12 +38,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Sandeep
  */
-@Component(
-	property = "model.class.name=com.curious.guestbook.model.Guestbook",
-	service = AopService.class
-)
+@Component(property = "model.class.name=com.curious.guestbook.model.Guestbook", service = AopService.class)
 public class GuestbookLocalServiceImpl extends GuestbookLocalServiceBaseImpl {
-	
+
 	public Guestbook addGuestbook(long userId, String name, ServiceContext serviceContext) throws PortalException {
 		long groupId = serviceContext.getScopeGroupId();
 
@@ -64,10 +64,17 @@ public class GuestbookLocalServiceImpl extends GuestbookLocalServiceBaseImpl {
 		guestbook.setExpandoBridgeAttributes(serviceContext);
 		guestbookPersistence.update(guestbook);
 		resourceLocalService.addModelResources(guestbook, serviceContext);
-		//resourceLocalService.addResources(user.getCompanyId(), groupId, userId, Guestbook.class.getName(), guestbookId, false, true, true);
+
+		AssetEntry assetEntry = assetEntryLocalService.updateEntry(userId, groupId, guestbook.getCreateDate(),
+				guestbook.getModifiedDate(), Guestbook.class.getName(), guestbookId, guestbook.getUuid(), 0,
+				serviceContext.getAssetCategoryIds(), serviceContext.getAssetTagNames(), true, true, null, null, null,
+				null, ContentTypes.TEXT_HTML, guestbook.getName(), null, null, null, null, 0, 0, null);
+
+		assetLinkLocalService.updateLinks(userId, assetEntry.getEntryId(), serviceContext.getAssetLinkEntryIds(),
+				AssetLinkConstants.TYPE_RELATED);
 		return guestbook;
 	}
-	
+
 	public Guestbook updateGuestbook(long userId, long guestbookId, String name, ServiceContext serviceContext)
 			throws PortalException {
 		Date now = new Date();
@@ -83,51 +90,63 @@ public class GuestbookLocalServiceImpl extends GuestbookLocalServiceBaseImpl {
 
 		guestbookPersistence.update(guestbook);
 
-//		resourceLocalService.updateResources(serviceContext.getCompanyId(), serviceContext.getScopeGroupId(),
-//				Guestbook.class.getName(), guestbookId, serviceContext.getModelPermissions());
-//		
 		resourceLocalService.updateModelResources(guestbook, serviceContext);
+
+		AssetEntry assetEntry = assetEntryLocalService.updateEntry(userId, guestbook.getGroupId(),
+				guestbook.getCreateDate(), guestbook.getModifiedDate(), Guestbook.class.getName(), guestbookId,
+				guestbook.getUuid(), 0, serviceContext.getAssetCategoryIds(), serviceContext.getAssetTagNames(), true,
+				true, guestbook.getCreateDate(), null, null, null, ContentTypes.TEXT_HTML, guestbook.getName(), null,
+				null, null, null, 0, 0, serviceContext.getAssetPriority());
+
+		assetLinkLocalService.updateLinks(userId, assetEntry.getEntryId(), serviceContext.getAssetLinkEntryIds(),
+				AssetLinkConstants.TYPE_RELATED);
+
 		return guestbook;
 	}
-	
-	public Guestbook deleteGuestbook(long guestbookId,ServiceContext serviceContext)throws PortalException{
-		Guestbook guestbook=guestbookLocalService.getGuestbook(guestbookId);
-		
-		List<Entry> entries = entryLocalService.getEntries(serviceContext.getScopeGroupId(),guestbookId);
-		for(Entry entry : entries) {
+
+	public Guestbook deleteGuestbook(long guestbookId, ServiceContext serviceContext) throws PortalException {
+		Guestbook guestbook = guestbookLocalService.getGuestbook(guestbookId);
+
+		List<Entry> entries = entryLocalService.getEntries(serviceContext.getScopeGroupId(), guestbookId);
+		for (Entry entry : entries) {
 			entryLocalService.deleteEntry(entry.getEntryId());
 		}
-		
-		guestbook= deleteGuestbook(guestbook);
-		
-		//resourceLocalService.deleteResource(serviceContext.getCompanyId(), Guestbook.class.getName(), ResourceConstants.SCOPE_INDIVIDUAL, guestbookId);
+
+		guestbook = deleteGuestbook(guestbook);
+
 		resourceLocalService.deleteResource(guestbook, ResourceConstants.SCOPE_INDIVIDUAL);
+		
+		AssetEntry assetEntry= assetEntryLocalService.fetchEntry(Guestbook.class.getName(), guestbookId);
+		
+		assetLinkLocalService.deleteLinks(assetEntry.getEntryId());
+		
+		assetEntryLocalService.deleteAssetEntry(assetEntry);
+		
 		return guestbook;
 	}
-	
-	public List<Guestbook> getGuestbooks(long groupId){
+
+	public List<Guestbook> getGuestbooks(long groupId) {
 		return guestbookPersistence.findByGroupId(groupId);
 	}
-	
-	public List<Guestbook> getGuestbooks(long groupId, int start, int end){
+
+	public List<Guestbook> getGuestbooks(long groupId, int start, int end) {
 		return guestbookPersistence.findByGroupId(groupId, start, end);
 	}
-	
-	public List<Guestbook> getGuestbooks(long groupId, int start, int end, OrderByComparator<Guestbook> obc){
+
+	public List<Guestbook> getGuestbooks(long groupId, int start, int end, OrderByComparator<Guestbook> obc) {
 		return guestbookPersistence.findByGroupId(groupId, start, end, obc);
 	}
-	
+
 	public int getGuestbooksCount(long groupId) {
-	    return guestbookPersistence.countByGroupId(groupId);
+		return guestbookPersistence.countByGroupId(groupId);
 	}
 
 	private void validate(String name) throws PortalException {
-		if(Validator.isNull(name)) {
+		if (Validator.isNull(name)) {
 			throw new GuestbookNameException();
 		}
 	}
-	
+
 	@Reference
-	protected com.curious.guestbook.service.EntryLocalService
-		entryLocalService;
+	protected com.curious.guestbook.service.EntryLocalService entryLocalService;
 }
