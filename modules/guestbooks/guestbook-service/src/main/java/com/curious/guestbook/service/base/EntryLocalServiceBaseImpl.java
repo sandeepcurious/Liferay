@@ -639,4 +639,8 @@ public abstract class EntryLocalServiceBaseImpl
 	protected com.liferay.asset.kernel.service.AssetLinkLocalService
 		assetLinkLocalService;
 
+	@Reference
+	protected com.liferay.asset.kernel.service.AssetTagLocalService
+		assetTagLocalService;
+
 }

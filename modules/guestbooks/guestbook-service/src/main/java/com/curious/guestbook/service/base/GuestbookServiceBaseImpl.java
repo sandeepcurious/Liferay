@@ -179,4 +179,11 @@ public abstract class GuestbookServiceBaseImpl
 	protected com.liferay.asset.kernel.service.AssetLinkLocalService
 		assetLinkLocalService;
 
+	@Reference
+	protected com.liferay.asset.kernel.service.AssetTagLocalService
+		assetTagLocalService;
+
+	@Reference
+	protected com.liferay.asset.kernel.service.AssetTagService assetTagService;
+
 }

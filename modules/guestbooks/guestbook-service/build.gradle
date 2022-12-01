@@ -1,6 +1,7 @@
 dependencies {
 	compile project(":modules:guestbooks:guestbook-api")
-
+	compileOnly group: "com.liferay", name: "com.liferay.portal.search.spi"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.search.api"
 	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
 }
 

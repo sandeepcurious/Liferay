@@ -67,12 +67,12 @@ public class EntryAssetRendererFactory extends BaseAssetRendererFactory<Entry> {
 		return _entryModelResourcePermission.contains(permissionChecker, classPK, actionId);
 	}
 
-	@Override
-	public boolean hasAddPermission(PermissionChecker permissionChecker, long groupId, long classTypeId)
-			throws Exception {
-
-		return _entryModelResourcePermission.contains(permissionChecker, groupId, ActionKeys.ADD_ENTRY);
-	}
+//	@Override
+//	public boolean hasAddPermission(PermissionChecker permissionChecker, long groupId, long classTypeId)
+//			throws Exception {
+//
+//		return _entryModelResourcePermission.contains(permissionChecker, groupId, ActionKeys.ADD_ENTRY);
+//	}
 
 	@Override
 	public PortletURL getURLAdd(LiferayPortletRequest liferayPortletRequest,
@@ -127,7 +127,7 @@ public class EntryAssetRendererFactory extends BaseAssetRendererFactory<Entry> {
 
 	private EntryLocalService _entryLocalService;
 
-	@Reference(target = "(osgi.web.symbolicname=com.liferay.docs.guestbook.portlet)")
+	@Reference(target = "(osgi.web.symbolicname=com.curious)")
 	private ServletContext _servletContext;
 
 	private static final boolean _LINKABLE = true;

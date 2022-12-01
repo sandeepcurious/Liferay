@@ -93,12 +93,12 @@ public class GuestbookAssetRendererFactory extends BaseAssetRendererFactory<Gues
 		return _guestbookModelResourcePermission.contains(permissionChecker, classPK, actionId);
 	}
 
-	@Override
-	public boolean hasAddPermission(PermissionChecker permissionChecker, long groupId, long classTypeId)
-			throws Exception {
-
-		return _guestbookModelResourcePermission.contains(permissionChecker, groupId, ActionKeys.ADD_ENTRY);
-	}
+//	@Override
+//	public boolean hasAddPermission(PermissionChecker permissionChecker, long groupId, long classTypeId)
+//			throws Exception {
+//
+//		return _guestbookModelResourcePermission. contains(permissionChecker, groupId, ActionKeys.ADD_ENTRY);
+//	}
 
 	@Reference
 	private AssetDisplayPageFriendlyURLProvider _assetDisplayPageFriendlyURLProvider;
@@ -118,6 +118,6 @@ public class GuestbookAssetRendererFactory extends BaseAssetRendererFactory<Gues
 	@Reference
 	private PortletURLFactory _portletURLFactory;
 
-	@Reference(target = "(osgi.web.symbolicname=com.curious.guestbook.web)")
+	@Reference(target = "(osgi.web.symbolicname=com.curious)")
 	private ServletContext _servletContext;
 }
