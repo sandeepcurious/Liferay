@@ -1,0 +1,12 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	compile group: "com.itextpdf", name: "itext7-core", version: "7.2.5"
+	compile group: "com.itextpdf", name: "forms", version: "7.2.5"
+	compile group: "com.itextpdf", name: "commons", version: "7.2.5"
+	compile group: "com.itextpdf", name: "io", version: "7.2.5"
+	compile group: "com.itextpdf", name: "layout", version: "7.2.5"
+	compile group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.70"
+	compile group: "org.bouncycastle", name: "bcutil-jdk15on", version: "1.70"
+	compile group: "org.bouncycastle", name: "bcpkix-jdk15on", version: "1.70"
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.0"
+}

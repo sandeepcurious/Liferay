@@ -1,0 +1,14 @@
+Bundle-Name: pdfeditor
+Bundle-SymbolicName: com.curious.web
+Bundle-Version: 1.0.0
+Export-Package: com.curious.web.constants
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
+-includeresource:\
+	META-INF/lib/kernel-7.2.5.jar=kernel-7.2.5.jar;lib:=true,\
+	META-INF/lib/forms-7.2.5.jar=forms-7.2.5.jar;lib:=true,\
+	META-INF/lib/commons-7.2.5.jar=commons-7.2.5.jar;lib:=true,\
+	META-INF/lib/io-7.2.5.jar=io-7.2.5.jar;lib:=true,\
+	META-INF/lib/layout-7.2.5.jar=layout-7.2.5.jar;lib:=true,\
+	META-INF/lib/bcprov-jdk15on-1.70.jar=bcprov-jdk15on-1.70.jar;lib:=true,\
+	META-INF/lib/bcutil-jdk15on-1.70.jar=bcutil-jdk15on-1.70.jar;lib:=true,\
+	META-INF/lib/bcpkix-jdk15on-1.70.jar=bcpkix-jdk15on-1.70.jar;lib:=true,\
